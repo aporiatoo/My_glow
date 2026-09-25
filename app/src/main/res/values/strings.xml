@@ -2,4 +2,10 @@
 <resources>
     <string name="app_name">Ascend</string>
     <string name="widget_desc">بلوک فعلی و بعدی برنامه</string>
+    <string name="blocker_desc">وقتی اپ مسدودی باز شود، Ascend به صفحهٔ اصلی برمی‌گرداند. هیچ محتوایی خوانده یا ذخیره نمی‌شود.</string>
+    <string name="w_quest_desc">کوئست‌های امروز و پیشرفت</string>
+    <string name="w_stat_desc">سطح، تسلط و استریک</string>
+    <string name="w_sleep_desc">ساعت خواب امشب و شمارش معکوس</string>
+    <string name="w_mini_desc">بلوک فعلی — کوچک</string>
+    <string name="w_ball_desc">کارت بازیکن و تمرین بعدی</string>
 </resources>

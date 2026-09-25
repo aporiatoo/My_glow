@@ -28,6 +28,17 @@ class StartActivity : Activity() {
     private lateinit var next: Button
     private lateinit var back: TextView
 
+    /* فونت فارسی از assets — بدون این، استارت‌منو با فونت پیش‌فرض
+       سیستم رندر می‌شد که برای فارسی ضعیف است */
+    private val fontR: Typeface by lazy {
+        try { Typeface.createFromAsset(assets, "font/vazir.ttf") }
+        catch (e: Exception) { Typeface.DEFAULT }
+    }
+    private val fontB: Typeface by lazy {
+        try { Typeface.createFromAsset(assets, "font/vazir_bold.ttf") }
+        catch (e: Exception) { Typeface.DEFAULT_BOLD }
+    }
+
     private val INK = Color.parseColor("#f4f4f5")
     private val DIM = Color.parseColor("#8a8a93")
     private val DIM2 = Color.parseColor("#5c5c66")
@@ -66,7 +77,7 @@ class StartActivity : Activity() {
         title = TextView(this).apply {
             textSize = 19f
             setTextColor(INK)
-            typeface = Typeface.DEFAULT_BOLD
+            typeface = fontB
             setPadding(dp(20), dp(18), dp(20), dp(6))
         }
         dots = LinearLayout(this).apply {
@@ -95,7 +106,7 @@ class StartActivity : Activity() {
         next = Button(this).apply {
             setTextColor(Color.BLACK)
             textSize = 14f
-            typeface = Typeface.DEFAULT_BOLD
+            typeface = fontB
             background = roundBg(INK, 0, dp(13))
             stateListAnimator = null
             setOnClickListener { onNext() }
@@ -111,6 +122,7 @@ class StartActivity : Activity() {
         root.addView(dots, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         root.addView(host, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
         root.addView(footer, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
+        applyFont(root)
         setContentView(root)
 
         root.setOnApplyWindowInsetsListener { v, insets ->
@@ -134,9 +146,11 @@ class StartActivity : Activity() {
         back.visibility = if (step == 0) View.INVISIBLE else View.VISIBLE
         next.text = when (step) { 4 -> "START"; 1 -> "تهیه کردم، ادامه"; else -> "ادامه" }
         host.removeAllViews()
-        host.addView(when (step) {
+        val page = when (step) {
             0 -> pageWelcome(); 1 -> pageKit(); 2 -> pageProfile(); 3 -> pagePerms(); else -> pageStart()
-        })
+        }
+        applyFont(page)
+        host.addView(page)
     }
 
     // ---------- صفحهٔ ۱ ----------
@@ -160,7 +174,7 @@ class StartActivity : Activity() {
         c.addView(body("قبل از شروع این اقلام را تهیه کن. بدون این‌ها بعضی روتین‌ها اجرا نمی‌شوند. قیمت‌ها تخمینی است."))
 
         val sumView = TextView(this).apply {
-            setTextColor(INK); textSize = 13f; typeface = Typeface.DEFAULT_BOLD
+            setTextColor(INK); textSize = 13f; typeface = fontB
             setPadding(dp(13), dp(11), dp(13), dp(11))
             background = roundBg(GLASS, BR2, dp(12))
         }
@@ -201,7 +215,7 @@ class StartActivity : Activity() {
                 val txt = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
                 txt.addView(TextView(this).apply {
                     text = it0.name; setTextColor(INK); textSize = 14f
-                    typeface = Typeface.DEFAULT_BOLD
+                    typeface = fontB
                 })
                 txt.addView(TextView(this).apply {
                     text = it0.why; setTextColor(DIM); textSize = 11.5f
@@ -261,7 +275,7 @@ class StartActivity : Activity() {
             }, LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
             r.addView(TextView(this).apply {
                 text = v; setTextColor(INK); textSize = 13f
-                typeface = Typeface.DEFAULT_BOLD
+                typeface = fontB
             })
             c.addView(r, lp().apply { bottomMargin = dp(8) })
         }
@@ -286,7 +300,7 @@ class StartActivity : Activity() {
             }
             box.addView(TextView(this).apply {
                 text = t + if (req) "" else "   (اختیاری)"
-                setTextColor(INK); textSize = 14f; typeface = Typeface.DEFAULT_BOLD
+                setTextColor(INK); textSize = 14f; typeface = fontB
             })
             box.addView(TextView(this).apply {
                 text = d; setTextColor(DIM); textSize = 11.5f
@@ -348,6 +362,14 @@ class StartActivity : Activity() {
     }
 
     // ---------- helpers ----------
+    /** فونت را روی کل درخت ویو اعمال می‌کند — تضمین می‌کند هیچ متنی جا نماند */
+    private fun applyFont(v: View) {
+        when (v) {
+            is android.view.ViewGroup -> for (i in 0 until v.childCount) applyFont(v.getChildAt(i))
+            is TextView -> if (v.typeface !== fontB) v.typeface = fontR
+        }
+    }
+
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
     private fun lp() = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
     private fun col() = LinearLayout(this).apply {
@@ -370,7 +392,7 @@ class StartActivity : Activity() {
     }
     private fun sectionLabel(t: String) = TextView(this).apply {
         text = t; setTextColor(DIM); textSize = 11f
-        typeface = Typeface.DEFAULT_BOLD
+        typeface = fontB
         setPadding(dp(2), dp(16), dp(2), dp(8))
     }
     private fun row(ic: String, t: String): View {

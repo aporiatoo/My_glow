@@ -4,6 +4,9 @@ const V={};
 V.day=()=>{
   const EV=evToday();
   let h='';
+  /* مسیر طلایی: در ۳۰ روز اول، تنها چیزی که مهم است */
+  if(typeof goldenCard==='function') h+=goldenCard();
+
   /* ---- یک جمله، مهم‌ترین چیز همین لحظه ---- */
   {const _tr=(()=>{try{return plan().some(x=>x.c==='body')}catch(e){return false}})();
    const _b=brief(S,{hour:new Date().getHours(),training:_tr});
@@ -347,7 +350,39 @@ window.wt=async()=>{const last=S.wt[S.wt.length-1];
   f:[{k:'v',ty:'num',v:last,st:.1,min:20,max:200,u:'kg'}]});
  if(r&&r.v>0){S.wt.push(r.v);sv();rd();
   const d=Math.round((r.v-last)*10)/10;tst('✓ '+(d?(d>0?'+':'')+fa(d)+' kg':L('بدون تغییر','no change')))}};
-V.sh=()=>`<div class="c gl"><div class="ct">⊘ ${L('سپر دیجیتال','Shield')}</div>
+V.sh=()=>`<div class="c gl"><div class="ct">⊘ ${L('بلاکر اپ‌ها','App Blocker')}
+  <b>${window.blockerOn&&window.blockerOn()?L('فعال','on'):L('خاموش','off')}</b></div>
+ ${(()=>{
+   if(!window.isNative||!window.isNative())
+     return `<div class="hint">${L('این قابلیت فقط در نسخهٔ اندروید کار می‌کند.','Android only.')}</div>`;
+   if(!window.blockerOn())
+     return `<div class="cs">${L('برای فعال شدن، Ascend را در تنظیمات دسترس‌پذیری روشن کن. هیچ محتوایی خوانده یا ذخیره نمی‌شود — فقط نام اپ جلوی چشم بررسی می‌شود.','Enable in Accessibility settings.')}</div>
+      <button class="bt p" onclick="blockerGo()">${L('باز کردن تنظیمات','Open settings')}</button>`;
+   return `<div class="cs">${L('روی هر اپ بزن تا حالتش عوض شود: مسدود، سقف زمانی، یا آزاد.','Tap to change mode.')}</div>
+    ${PKGS.map(([pkg,name,def])=>{const st=(S.blk2&&S.blk2[pkg])||def;
+      const lbl=st==='block'?L('مسدود','blocked'):st==='cap'?L('سقف زمانی','capped'):L('آزاد','free');
+      const ic=st==='block'?'⊘':st==='cap'?'◷':'○';
+      return `<div class="rw" onclick="blkCycle('${pkg}')"><div class="ri">${ic}</div>
+       <div><div class="rt">${name}</div><div class="rd">${lbl}</div></div></div>`}).join('')}
+    <div class="hint">${L('تلگرام هرگز کاملاً مسدود نمی‌شود — محیط کاری توست. فقط سقف ۴۵ دقیقه.','Telegram is capped, never blocked.')}</div>`})()}</div>
+
+ <div class="c gl"><div class="ct">◉ ${L('قفل بخش‌های خصوصی','Private Lock')}
+  <b>${S.lockOn?L('روشن','on'):L('خاموش','off')}</b></div>
+  <div class="cs">${L('ژورنال و بخش انضباط با اثر انگشت یا رمز گوشی باز شوند. روزی یک بار پرسیده می‌شود.','Fingerprint for journal and discipline.')}</div>
+  ${(window.isNative&&window.isNative())
+    ? `<button class="bt ${S.lockOn?'':'p'}" onclick="tgLock()">${S.lockOn?L('خاموش کن','Turn off'):L('روشن کن','Turn on')}</button>`
+    : `<div class="hint">${L('فقط در نسخهٔ اندروید','Android only')}</div>`}</div>
+
+ <div class="c gl"><div class="ct">◐ ${L('اتصال سلامت','Health Connect')}</div>
+  ${(()=>{const st=window.healthState?window.healthState():'web';
+   if(st==='web')return `<div class="hint">${L('فقط در نسخهٔ اندروید','Android only')}</div>`;
+   if(st==='unsupported')return `<div class="hint">${L('اندروید این گوشی قدیمی‌تر از نیاز است','Needs Android 9+')}</div>`;
+   if(st==='missing')return `<div class="cs">${L('اگر Health Connect را نصب کنی، بعداً خواب و قدم خودکار خوانده می‌شوند.','Install to sync sleep and steps later.')}</div>
+     <button class="bt" onclick="healthGo()">${L('نصب Health Connect','Install')}</button>`;
+   return `<div class="cs">${L('نصب است. فعلاً خواب را دستی ثبت کن — اتصال خودکار در نسخهٔ بعد.','Installed. Manual logging for now.')}</div>
+     <button class="bt" onclick="healthGo()">${L('باز کردن','Open')}</button>`})()}</div>
+
+ <div class="c gl"><div class="ct">⊘ ${L('سپر دیجیتال','Shield')}</div>
  <div class="cs">${L('در نسخهٔ اندروید: VpnService محلی + Accessibility. بدون روت، ترافیک از دستگاه خارج نمی‌شود.','Local VpnService + Accessibility.')}</div>
  ${BLOCKS.map(b=>`<div class="rw" ${b[0]!=='adult'?`onclick="bl('${b[0]}')"`:''}>
   <div class="ri">${b[1]}</div><div><div class="rt">${b[2]}</div><div class="rd">${b[3]}</div></div>
@@ -432,7 +467,7 @@ V.me=()=>`<div class="c gl"><div class="ct">◎ ${L('پروفایل','Profile')}
  <div class="cs">${L('تاریخ شروع را ثبت کن تا برنامه برای ۳۰ روز بازنویسی شود: سحری، افطار، تمرین بعد افطار، چرت جبرانی.','Set the first fasting day.')}</div>
  <button class="bt ${S.ramadan?'':'p'}" style="margin-top:8px" onclick="ramSet()">
   ${S.ramadan?L('تغییر یا خاموش کردن','Change or disable'):L('فعال کردن حالت رمضان','Enable Ramadan')}</button>
- ${S.ramadan?`<div class="hint">${L('شروع: ','Start: ')}${S.ramadan.start}</div>`:''}</div>
+ ${(S.ramadan&&S.ramadan.start)?`<div class="hint">${L('شروع: ','Start: ')}${S.ramadan.start}</div>`:''}</div>
 
  <div class="c gl"><div class="ct">◱ ${L('پشتیبان‌گیری','Backup')}</div>
  <div class="cs">${L('دادهٔ اپ فقط روی همین گوشی است. اگر اپ پاک شود یا گوشی عوض شود، همه‌چیز از بین می‌رود.','Data lives only on this device.')}</div>
@@ -694,6 +729,42 @@ window.famTg=k=>{famLog(S,k);xp(20);sv();rd();tst('◈ '+L('ثبت شد','Logged
 
 window.tgl=k=>{S[k]=S[k]?0:1;sv();rd()};
 /* ---- همگام‌سازی یادآورها با لایهٔ نیتیو (فقط در APK) ---- */
+/* خلاصهٔ کامل برای ویجت‌ها — ویجت نمی‌تواند JS اجرا کند،
+   پس هر چیزی که لازم دارد از قبل محاسبه و ذخیره می‌شود. */
+window.syncWidget=()=>{
+  const N=window.Native;
+  if(!N||!N.saveWidget)return false;
+  try{
+    const d=td();
+    const q=QUESTS.filter(x=>obOpen(S,x[0])).map(x=>({
+      id:x[0], t:x[2], xp:x[4], done:!!S.q[d+'|'+x[0]]
+    }));
+    const m=(typeof masteryScore==='function')?masteryScore(S):{mind:0,body:0,look:0,all:0};
+    const sl=(typeof sleepPlan==='function')?sleepPlan(S):null;
+    const pl=(typeof player==='function')?player(S):{overall:0,tested:0};
+    const st=S.streak||{};
+    /* روز تمرین بعدی */
+    let nextTrain=null;
+    for(let i=0;i<7;i++){
+      const dow=(new Date().getDay()+i)%7;
+      if((ME.clubDays||[]).includes(dow)){
+        nextTrain={in:i,dow};break;
+      }
+    }
+    N.saveWidget(JSON.stringify({
+      quests:q,
+      xp:S.xp||0, lvl:lvl(S.xp||0),
+      mastery:{mind:m.mind,body:m.body,look:m.look,all:m.all},
+      sleep:sl?{target:sl.targetStr,day:sl.day,pc:Math.round(sl.shiftMin/270*100)}:null,
+      football:{overall:pl.overall,tested:pl.tested,total:15,
+                next:nextTrain?nextTrain.in:null},
+      streak:{clean:st.clean||0,train:st.train||0,sleep:st.sleep||0},
+      prot:(typeof protToday==='function')?protToday(S):null
+    }));
+    return true;
+  }catch(e){return false}
+};
+
 window.syncNotif=()=>{
   if(!window.isNative||!window.isNative())return false;
   try{
@@ -701,8 +772,9 @@ window.syncNotif=()=>{
     const p=JSON.stringify(plan().filter(x=>x.e>x.s)
       .map(x=>({s:x.s,e:x.e,t:x.t,d:x.d||'',ic:x.ic||''})));
     /* ویجت همیشه برنامه را می‌گیرد؛ آلارم فقط وقتی روشن است */
-    if(!S.notif){N.cancelAll();N.planOnly(p);return true}
+    if(!S.notif){N.cancelAll();N.planOnly(p);window.syncWidget();return true}
     N.schedule(p);
+    window.syncWidget();
     return true;
   }catch(e){return false}
 };

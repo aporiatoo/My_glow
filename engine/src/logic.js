@@ -1,7 +1,7 @@
 /* ============ STATE ============ */
 const K='ascend.v2';
 const DEF={xp:0,done:{},q:{},logs:[],
- notif:1, bkWk:0, mode:null, comeback:null, ramadan:null, obOff:0, urges:[], ftest:[], shop:{}, hts:[], fam:{}, streak:{clean:0,train:0,sleep:0,screen:0},best:{clean:0,train:0,sleep:0,screen:0},
+ notif:1, bkWk:0, mode:null, comeback:null, ramadan:null, obOff:0, urges:[], ftest:[], shop:{}, hts:[], fam:{}, lockOn:0, blk2:{}, fsk:{}, mind2:{}, war:{}, inf:{}, ment:{}, fb:{}, fbiq:[], ai:1, prof:{}, protDay:null, streak:{clean:0,train:0,sleep:0,screen:0},best:{clean:0,train:0,sleep:0,screen:0},
  blk:{ig:1,ir:1,x:1,adult:1,games:1,short:1,tg:0},
  stat:{body:32,look:28,mind:38,disc:15,social:30,money:8},
  season:'summer',lang:'fa',wt:[65],ev:[],barber:null,
@@ -42,16 +42,30 @@ let S=Object.assign({},JSON.parse(JSON.stringify(DEF)),(()=>{
   const wk = Math.floor(Date.now() / 6048e5);
   if (S.cmpWk !== wk) { compact(S); S.cmpWk = wk; }
 })();
+let _wgT=null;
 const sv=()=>{
   if(typeof planInvalidate==='function')planInvalidate();
   try{localStorage.setItem(K,JSON.stringify(S))}
   catch(e){ /* حافظه پر — داده در همین نشست سالم می‌ماند */ }
+  /* ویجت‌ها بعد از هر تغییر تازه شوند.
+     با تأخیر کوتاه تا چند تغییر پشت‌سرهم یک بار بنویسد. */
+  if(window.syncWidget){
+    clearTimeout(_wgT);
+    _wgT=setTimeout(()=>{try{window.syncWidget()}catch(e){}},400);
+  }
 };
 /* تاریخ محلی، نه UTC — بین نیمه‌شب تا ۰۳:۳۰ تهران، UTC هنوز روز قبل است
    و باعث می‌شد کوئست شبانه روی روز اشتباه ثبت شود */
 const dstr=d=>{const x=d||new Date();
   return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
 const td=()=>dstr();
+
+/* ---- فرار HTML ----
+   هر متنی که کاربر وارد می‌کند باید از این رد شود.
+   بدون آن، یک «<» در نام یا ژورنال، رابط را می‌شکند. */
+const esc=t=>String(t==null?'':t)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const mn=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
 const hm=m=>{m=((m%1440)+1440)%1440;return String(m/60|0).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
 const tM=s=>{const[a,b]=s.split(':').map(Number);return a*60+b};

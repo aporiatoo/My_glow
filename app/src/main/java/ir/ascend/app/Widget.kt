@@ -25,7 +25,7 @@ class Widget : AppWidgetProvider() {
     override fun onReceive(ctx: Context, i: Intent) {
         super.onReceive(ctx, i)
         if (i.action == ACTION_REFRESH || i.action == Intent.ACTION_TIME_TICK) {
-            refreshAll(ctx)
+            Widgets.refreshAll(ctx)
         }
     }
 

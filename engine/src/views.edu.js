@@ -231,7 +231,7 @@ V.qa=()=>{
    return `<div class="c gl"><div class="ct">◷ ${L('مصرف امروز','Usage today')}</div>
     ${capped.map(x=>{const u=playToday(S,x.id),pc=Math.min(100,u/x.cap*100);
      return `<div class="rw"><div class="ri">${x.ic}</div>
-      <div style="flex:1"><div class="rt">${x.n}</div>
+      <div style="flex:1"><div class="rt">${esc(x.n)}</div>
        <div class="bar" style="margin-top:5px"><div class="bf" style="width:${pc}%"></div></div></div>
       <div class="rx"${u>=x.cap?' style="background:#fff;color:#000"':''}>${fa(u)}/${fa(x.cap)}</div></div>`}).join('')}
     <div class="hint">${L('زمان را خودت بعد از استفاده ثبت می‌کنی. در نسخهٔ اندروید خودکار می‌شود.','Manual now; automatic in the Android build.')}</div></div>`})()}`};
@@ -240,7 +240,7 @@ function qaTile(x,list){
   const u=playToday(S,x.id),over=x.cap&&u>=x.cap;
   return `<button class="qt${over?' ov':''}" onclick="lkGo('${x.id}','${list}')"
    oncontextmenu="event.preventDefault();lkEd('${x.id}','${list}')">
-   <div class="qi">${x.ic}</div><div class="qn">${x.n}</div>
+   <div class="qi">${x.ic}</div><div class="qn">${esc(x.n)}</div>
    <div class="qh">${x.cap?fa(u)+'/'+fa(x.cap)+L('د','m'):lkHost(x.u)}</div></button>`}
 
 V.play=()=>{
@@ -493,22 +493,40 @@ window.tnode=async id=>{
 /* ============ NAV: 5 groups ============ */
 const GRP=[
  ['now','◷','امروز','Today',[['day','تایم‌لاین','Timeline'],['q','کوئست','Quests'],
-   ['sys_readiness','آمادگی','Readiness'],['cr','بحران','Crisis']]],
- ['body','⚽','بدن','Body',[['gy','تمرین','Training'],['sys_foot2','فوتبال','Football'],
+   ['slfix','خواب','Sleep'],['sys_readiness','آمادگی','Readiness'],['cr','بحران','Crisis']]],
+ ['body','⚽','بدن','Body',[['fb','کارت','Card'],['batch','سنجش','Measure'],['coach','بازخورد','Feedback'],['dec','تصمیم','Decision'],['lineup','لاین‌آپ','Lineup'],['team','تیم','Team'],['prep','مسابقه','Match'],['fb_skill','مهارت','Skills'],
+   ['fb_iq','هوش بازی','Game IQ'],['gy','تمرین','Training'],['sys_foot2','فوتبال','Football'],
    ['nu','تغذیه','Food'],['lg','پیشرفت','Progress']]],
  ['edu','▦','درس','Study',[['st_plan','برنامه','Plan'],['st_grade','نمرات','Grades'],
    ['st_stream','رشته','Stream'],['st_tech','تکنیک','Method']]],
  ['self','◈','خود','Self',[['wd','استایل','Style'],['sys_look2','ظاهر','Looks'],
    ['sys_mind2','ذهن','Mind'],['pr','پروتکل','Protocols'],['sys_psy','روان','Psych']]],
- ['sysm','◆','سیستم',"System",[['iq','بینش','Insight'],['sys_health','سلامت','Health'],
+ ['mast','★','تسلط','Mastery',[['learn','یادگیری','Learn'],['learn_t','رشته','Track'],['mini','ریزمهارت','Micro'],['mx','مسیر','Path'],['mx_mind','ذهن','Mind'],
+   ['mx_body','بدن','Body'],['mx_look','ظاهر','Look'],
+   ['inf','سپر','Shield'],['inf_def','تاکتیک','Tactics'],['inf_nego','مذاکره','Nego'],
+   ['mt','منتالیست','Mentalist'],['mt_learn','ستون‌ها','Pillars']]],
+ ['sysm','◆','سیستم',"System",[['ai','هوشمند','Smart'],['iq','بینش','Insight'],['sys_health','سلامت','Health'],
    ['sys_cal','تقویم','Calendar'],['ad','تطبیق','Adapt'],['st','آمار','Stats'],['tree','درخت','Tree'],['ac','دستاورد','Awards']]],
- ['more','◎','من','Me',[['qa','میان‌بر','Quick'],['play','سرگرمی','Play'],['sh','سپر','Shield'],
+ ['more','◎','من','Me',[['pf','پروفایل','Profile'],['calc','ابزار','Tools'],['honest','صداقت','Honesty'],['buy','تدارکات','Gear'],['qa','میان‌بر','Quick'],['play','سرگرمی','Play'],['sh','سپر','Shield'],
    ['mn','مالی','Money'],['so','حلقه','Circle'],['nt','نیتیو','Native'],['me','تنظیمات','Settings']]]
 ];
 let grp='now';
-function curSub(){return S.sub[grp]||GRP.find(g=>g[0]===grp)[4][0][0]}
+function curSub(){
+  const want=S.sub[grp]||GRP.find(g=>g[0]===grp)[4][0][0];
+  /* اگر ویو ذخیره‌شده هنوز قفل است، به اولین ویوی باز برگرد */
+  if(typeof viewOpen==='function'&&!viewOpen(S,want)){
+    const open=GRP.find(g=>g[0]===grp)[4].find(v=>viewOpen(S,v[0]));
+    return open?open[0]:want;
+  }
+  return want;
+}
 window.go=g=>{grp=g;S.sec=null;sv();rd();document.getElementById('vw').scrollTop=0;window.scrollTo(0,0)};
-window.goSub=(g,t)=>{grp=g;S.sub[g]=t;S.sec=null;sv();rd();document.getElementById('vw').scrollTop=0;window.scrollTo(0,0)};
+window.goSub=async(g,t)=>{
+  /* بخش خصوصی: قبل از نمایش، تأیید هویت */
+  if(window.lockGuard&&!(await window.lockGuard(t))){
+    tst(L('تأیید نشد','Not verified'));return}
+  _goSub(g,t)};
+window._goSub=(g,t)=>{grp=g;S.sub[g]=t;S.sec=null;sv();rd();document.getElementById('vw').scrollTop=0;window.scrollTo(0,0)};
 window.goto=t=>{const g=GRP.find(x=>x[4].some(s=>s[0]===t));if(g)goSub(g[0],t)};
 
 /* --- adaptive home: پیشنهاد محتوا بر اساس ساعت --- */
@@ -531,8 +549,10 @@ function rd(){
   document.getElementById('nv').innerHTML=GRP.map(x=>
    `<button class="nb ${x[0]===grp?'on':''}" onclick="go('${x[0]}')"><span>${x[1]}</span>${L(x[2],x[3])}</button>`).join('');
   let head='';
-  if(G[4].length>1) head=`<div class="sub">${G[4].map(s=>
-   `<button class="sb ${s[0]===t?'on':''}" onclick="goSub('${grp}','${s[0]}')">${L(s[1],s[2])}</button>`).join('')}</div>`;
+  if(G[4].length>1) head=`<div class="sub">${G[4].map(s=>{
+    const _lk=(typeof viewOpen==='function')&&!viewOpen(S,s[0]);
+    return `<button class="sb ${s[0]===t?'on':''}" style="${_lk?'opacity:.3':''}"
+      onclick="${_lk?`lockMsg('${s[0]}')`:`goSub('${grp}','${s[0]}')`}">${_lk?'◌ ':''}${L(s[1],s[2])}</button>`}).join('')}</div>`;
   /* دستور روز فقط در تب امروز/تایم‌لاین */
   let dir='';
   if(grp==='now'&&t==='day'){
@@ -541,7 +561,18 @@ function rd(){
      <div class="dt">${D[1]}</div><div class="dd">${D[2]}</div></div>
      ${hh[0]!=='day'?`<button class="bt" style="margin-bottom:11px" onclick="goto('${hh[0]}')">◷ ${hh[1]} →</button>`:''}`;
   }
-  document.getElementById('vw').innerHTML=head+(S.sec&&S.sec.v===t?'':dir)+renderView(t);
+  /* آخرین بازدیدها — با ۵۵ ویو، برگشت سریع لازم است */
+  if(typeof trackView==='function')trackView(t);
+  let rct='';
+  if((S.recent||[]).length>2){
+    rct=`<div class="rct">${S.recent.slice(1,6).map(id=>{
+      let nm='',gid='';
+      GRP.forEach(g=>g[4].forEach(v=>{if(v[0]===id){nm=L(v[1],v[2]);gid=g[0]}}));
+      if(!nm||!viewOpen(S,id))return '';
+      return `<button onclick="goSub('${gid}','${id}')">${nm}</button>`;
+    }).join('')}</div>`;
+  }
+  document.getElementById('vw').innerHTML=head+rct+(S.sec&&S.sec.v===t?'':dir)+renderView(t);
   hd();
   if(typeof bumpNumbers==='function')setTimeout(bumpNumbers,0);
 }
@@ -635,6 +666,7 @@ setInterval(()=>curSub()==='day'?rd():hd(),30000);
 /* یادآورها: یک بار سر بارگذاری، و هر بار که روز عوض شد دوباره چیده شود */
 (()=>{ if(!window.isNative||!window.isNative())return;
   drainPending();
+  if(window.syncWidget)window.syncWidget();   /* ویجت‌ها مستقل از اعلان */
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)drainPending()});
   syncNotif();
   let last=td();

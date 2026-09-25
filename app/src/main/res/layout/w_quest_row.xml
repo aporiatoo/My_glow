@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/qr_root"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="horizontal" android:gravity="center_vertical"
+    android:background="@drawable/w_chip" android:padding="9dp"
+    android:layoutDirection="rtl">
+    <TextView android:id="@+id/qr_mark" android:layout_width="20dp"
+        android:layout_height="wrap_content" android:textSize="12sp"
+        android:textColor="#F4F4F5" android:text="○" />
+    <TextView android:id="@+id/qr_text" android:layout_width="0dp"
+        android:layout_height="wrap_content" android:layout_weight="1"
+        android:textSize="12sp" android:textColor="#F4F4F5"
+        android:maxLines="1" android:ellipsize="end" android:text="" />
+    <TextView android:id="@+id/qr_xp" android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:textSize="10sp"
+        android:textColor="#8A8A93" android:text="" />
+</LinearLayout>

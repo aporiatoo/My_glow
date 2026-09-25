@@ -2,10 +2,10 @@ const fs=require('fs');
 const P=__dirname+'/';
 /* از همان ماژول‌هایی می‌خواند که build.sh استفاده می‌کند،
    تا تست دقیقاً همان چیزی را بسنجد که منتشر می‌شود */
-const CORE=['schema.js','core.js','routines.js','calendar.js','study.js','social.js',
+const CORE=['schema.js','core.js','profile.js','me.js','mastery.js','influence.js','mentalist.js','football.js','decision.js','tools.js','unlock.js','learn.js','ai.js','routines.js','calendar.js','study.js','social.js',
             'extra.js','guide.js','img.js','tree.js','systems.js'];
-const UI=['src/logic.js','src/interact.js','src/views.core.js','src/views.life.js',
-          'src/views.sys.js','src/views.edu.js'];
+const UI=['src/logic.js','src/interact.js','src/native.js','src/views.core.js',
+          'src/views.life.js','src/views.sys.js','src/views.mastery.js','src/views.influence.js','src/views.mentalist.js','src/views.football.js','src/views.decision.js','src/views.tools.js','src/views.unlock.js','src/views.learn.js','src/views.ai.js','src/views.profile.js','src/views.me.js','src/views.edu.js'];
 const read=f=>fs.readFileSync(P+f,'utf8');
 let src=CORE.map(read).join('\n')+'\n'+UI.map(read).join('\n');
 const els={};
@@ -32,7 +32,17 @@ global.document={addEventListener(){},createElement:()=>({style:{},setAttribute(
  documentElement:{style:{},dir:'rtl'},
  getElementById:mk};
 global.window={addEventListener(){},open(){},scrollTo(){}};
-global.setInterval=()=>0;global.clearInterval=()=>{};global.setTimeout=(f)=>{return 0};global.clearTimeout=()=>{};
+global.setInterval=()=>0;global.clearInterval=()=>{};
+const _realCT=clearTimeout;
+global.clearTimeout=id=>{try{_realCT(id)}catch(e){}};
+/* setTimeout واقعی لازم است وگرنه هر کد async در تست کور می‌ماند.
+   تأخیرها صفر می‌شوند تا تست سریع بماند. */
+const _realTO=setTimeout;
+global.setTimeout=(f,ms)=>{
+  if(typeof f!=='function')return 0;
+  if(ms&&ms>3000)return 0;          /* تایم‌اوت‌های بلند در تست اجرا نشوند */
+  return _realTO(f,0);
+};
 global.alert=()=>{};global.prompt=()=>null;global.confirm=()=>true;
 const names=['S','V','GRP','plan','dayInfo','toJalali','toGregorian','jDaysInMonth','jIsLeap','jToday',
  'readiness','directive','sysHealth','multiVar','predictBreak','excuses','chapters','upcoming',
@@ -45,7 +55,7 @@ const names=['S','V','GRP','plan','dayInfo','toJalali','toGregorian','jDaysInMon
  'streamAdvice','examPlan','weekKey','TECHS','STREAMS','TDEF','daysLived','daysToStream','HCOUNT',
  'splitCards','cardMeta','renderView','SPLIT_MIN','deTag',
  'warmth','overdue','balance','socialHealth','socialMoves','socialInsight','socialTrend',
- 'RING_CAD','RING_CAP','INTER','ROLES','IMAP','RMAP','lastSeen','daysSince','SOCIAL_QUESTS','soOrbit','NODES','NMAP','BRANCH','BMAP','skillPoints','nodeState','branchProgress','treeRank','nextNodes','treeSVG','TREE','GUIDE','IMG','brief','SWIPE_MIN','QUICK','MIGRATIONS','coerce','compact','migrate','SCHEMA','SCHEMA_VERSION','memoryBack','yearAgo','isolationDays','famLog','famDue','FAM','breathTotal','BREATH','htStats','htAdd','shopCount','shopList','SHOP_NEVER','SHOP','seasonNow','SEASON_LEN','sleepTarget','sleepDebt','ftDue','ftDelta','ftLast','FT_MAP','FTEST','trgFix','trgAnalyze','TRG_MAP','TRIGGERS','obActive','obNext','obOpen','obWeek','ONBOARD','isNative','syncNotif','tgNotif'];
+ 'RING_CAD','RING_CAP','INTER','ROLES','IMAP','RMAP','lastSeen','daysSince','SOCIAL_QUESTS','soOrbit','NODES','NMAP','BRANCH','BMAP','skillPoints','nodeState','branchProgress','treeRank','nextNodes','treeSVG','TREE','GUIDE','IMG','MINI','miniToday','miniProgress','miniAll','MINI_MAP','starred','searchLessons','roadStage','ROADMAP','lessonToday','learnScore','trackProgress','trackLessons','ytLink','TRACK_MAP','TRACKS','feedbackGap','COACH_Q','parseSkills','estimate','batchList','goldenProgress','goldenToday','lockedCount','viewOpen','dayNum','VIEW_GATE','GOLDEN','sv','MATCHPREP','convert','countdown','bodyCalc','protToday','PROT','gpaNeed','msgFill','MSG','lineup','FORM_NOTE','FORM5','FORM11','decToday','decScore','passAcc','scanAvg','DERROR','DDRILL','DPART','todayShape','BUY','sleepPlan','sleepCrisis','ME','profRows','goals','foodFilter','foodOk','isSchoolDay','isClubDay','profAge','prof','PROF_DEF','aiSummary','advise','forecast','insights','pair','series','trend','corr','mean','trainToday','pathStage','matchStats','bestPos','posFit','player','skTier','PATH','REP_MAP','REP','TRAIN','IQ','SK_MAP','SKILL','ATTR','POS','fieldToday','mentScore','readAccuracy','pillarScore','PILLARS','FIELD','ATTENTION','MEMORY','BASELINE','COLD','OBSERVE','nextScen','infScore','drillScore','negoScore','defScore','SCEN','NEGO','SEVER','TACTIC','mindToday','masteryScore','lookScore','mindScore','footballScore','fskillTier','TIERS','LOOKS','WARRIOR','FDRILL','FSKILL','MODELS','FALLACY','INFLUENCE','TELLS','MICRO','LOCKED_VIEWS','PKGS','brief','SWIPE_MIN','QUICK','MIGRATIONS','coerce','compact','migrate','SCHEMA','SCHEMA_VERSION','memoryBack','yearAgo','isolationDays','famLog','famDue','FAM','breathTotal','BREATH','htStats','htAdd','shopCount','shopList','SHOP_NEVER','SHOP','seasonNow','SEASON_LEN','sleepTarget','sleepDebt','ftDue','ftDelta','ftLast','FT_MAP','FTEST','trgFix','trgAnalyze','TRG_MAP','TRIGGERS','obActive','obNext','obOpen','obWeek','ONBOARD','isNative','syncNotif','tgNotif'];
 const grab='(()=>{const o={};'+names.map(n=>`try{o.${n}=${n}}catch(e){}`).join('')+'return o})()';
 const ctx=eval(src+'\n;'+grab);
 ctx.els=els; ctx.store=store; ctx.win=global.window; ctx.reeval=code=>eval(code);

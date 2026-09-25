@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sl_root"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@drawable/w_bg"
+    android:padding="13dp" android:gravity="center" android:layoutDirection="rtl">
+    <TextView android:id="@+id/sl_label" android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:textSize="10sp"
+        android:textColor="#8A8A93" android:text="امشب بخواب" />
+    <TextView android:id="@+id/sl_time" android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:textSize="30sp"
+        android:textStyle="bold" android:textColor="#F4F4F5" android:text="—" />
+    <TextView android:id="@+id/sl_left" android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:textSize="11sp"
+        android:textColor="#8A8A93" android:layout_marginTop="2dp" android:text="" />
+    <ProgressBar android:id="@+id/sl_bar" style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent" android:layout_height="4dp"
+        android:layout_marginTop="10dp" android:max="100" android:progress="0"
+        android:progressDrawable="@drawable/w_prog" />
+</LinearLayout>

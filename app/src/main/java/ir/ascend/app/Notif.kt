@@ -120,7 +120,7 @@ object Notif {
             .putLong("alarmDay", todayKey())
             .putString("planJson", json)   // ویجت از همین می‌خواند
             .apply()
-        Widget.refreshAll(ctx)
+        Widgets.refreshAll(ctx)
         Log.i(TAG, "scheduled $n alarms")
     }
 
@@ -128,7 +128,7 @@ object Notif {
     fun savePlan(ctx: Context, json: String) {
         ctx.getSharedPreferences("ascend", Context.MODE_PRIVATE).edit()
             .putString("planJson", json).apply()
-        Widget.refreshAll(ctx)
+        Widgets.refreshAll(ctx)
     }
 
     fun cancelAll(ctx: Context) {
@@ -239,7 +239,7 @@ class ActionRx : BroadcastReceiver() {
                 val nq = if (q.isEmpty()) entry else "$q|$entry"
                 p.edit().putString("pendingDone", nq).apply()
                 nm?.cancel(rid)
-                Widget.refreshAll(ctx)
+                Widgets.refreshAll(ctx)
             }
             ACT_SNOOZE -> {
                 nm?.cancel(rid)

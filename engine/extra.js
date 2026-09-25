@@ -128,7 +128,8 @@ function ftDue(S) {
 
 /* ---------- ۴. بدهی خواب: یک شب بد، سه روز اثر ---------- */
 function sleepDebt(S) {
-  const NEED = 8.5;                       // ۱۴ ساله در دورهٔ رشد
+  /* نیاز خواب از پروفایل شخصی */
+  const NEED = (typeof prof === 'function') ? prof(S).sleepNeed : 8.5;
   const L = S.sleepLog || {};
   const keys = Object.keys(L).sort().slice(-7);
   if (!keys.length) return null;
@@ -184,8 +185,12 @@ const SHOP_NEVER = ['کدو', 'بادمجان'];
 
 function shopList(S) {
   const out = [];
+  /* محدودیت‌ها از پروفایل کاربر می‌آیند، نه فهرست ثابت */
+  const banned = (typeof prof === 'function')
+    ? [...(prof(S).dislikes || []), ...(prof(S).allergies || [])]
+    : SHOP_NEVER;
   Object.keys(SHOP).forEach(cat => {
-    const items = SHOP[cat].filter(x => !SHOP_NEVER.some(n => x.includes(n)));
+    const items = SHOP[cat].filter(x => !banned.some(n => n && x.includes(n)));
     items.forEach(it => {
       const id = cat + '|' + it;
       out.push({ id, cat, t: it, on: !!(S.shop && S.shop[id]) });

@@ -140,7 +140,7 @@ window.qsClose = () => {
 };
 
 window.qsRun = fn => {
-  qsClose();
+  window.qsClose();
   setTimeout(() => { try { window[fn] && window[fn](); } catch (e) { } }, 120);
 };
 

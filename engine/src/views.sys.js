@@ -318,7 +318,7 @@ V.sys_mind2=()=>{
       <div class="hint" style="color:var(--ink)">${L('بیشترین علت: ','Top cause: ')}<b>${wTop[0][0]}</b> (${fa(pc)}٪)${sTop?L(' · ضعیف‌ترین درس: ','  weakest: ')+(SUBJ.find(x=>x[0]===sTop[0])||['','?'])[1]:''}</div>
       <div class="hint">${advice[wTop[0][0]]||L('روند را زیر نظر بگیر.','Keep tracking.')}</div>`})()}
    ${(S.mistakes||[]).slice(-6).reverse().map((x,i)=>`<div class="rw"><div class="ri">◦</div>
-    <div><div class="rt">${x.q}</div><div class="rd">${(SUBJ.find(y=>y[0]===x.s)||['',x.s])[1]} · ${x.d}${x.w?' · '+x.w:''}</div></div></div>`).join('')}</div>
+    <div><div class="rt">${esc(x.q)}</div><div class="rd">${(SUBJ.find(y=>y[0]===x.s)||['',x.s])[1]} · ${x.d}${x.w?' · '+x.w:''}</div></div></div>`).join('')}</div>
 
   <div class="c gl"><div class="ct">◇ ${L('ردیاب تمرکز','Focus Tracker')}</div>
    <div class="cs">${L('در هر بلوک عمیق، چند بار حواست پرت شد؟','Distractions per deep block')}</div>

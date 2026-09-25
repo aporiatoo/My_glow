@@ -412,6 +412,22 @@ html[dir=rtl] .sw{--swx:-17px}
 .lp{animation:lpIn var(--d-fast) var(--e-spring) both}
 @keyframes lpIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
 
+/* ---- جستجو در هدر: با ۵۵ ویو، تایپ سریع‌تر از گشتن است ---- */
+.hsr{width:30px;height:30px;border-radius:10px;border:1px solid var(--br);
+  display:grid;place-items:center;font-size:var(--t3);color:var(--dim);
+  cursor:pointer;flex:none;margin-inline-end:var(--sp2);
+  transition:transform var(--d-fast) var(--e-spring),background var(--d-fast) linear}
+.hsr:active{transform:scale(.88);background:rgba(255,255,255,.1)}
+
+/* ---- آخرین بازدیدها ---- */
+.rct{display:flex;gap:6px;overflow-x:auto;padding:0 0 var(--sp2);
+  scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.rct::-webkit-scrollbar{display:none}
+.rct button{flex:none;font-size:var(--t1);padding:6px 12px;border-radius:99px;
+  border:1px solid var(--br);background:rgba(255,255,255,.05);color:var(--dim);
+  font:inherit;font-size:var(--t1);cursor:pointer;white-space:nowrap}
+.rct button:active{transform:scale(.94)}
+
 /* ---- حالت فشرده: همان محتوا، فاصلهٔ کمتر ---- */
 body.compact{--sp3:8px;--sp4:11px;--sp5:16px}
 body.compact .c{padding:11px;margin-bottom:9px}
@@ -690,6 +706,7 @@ html[dir=rtl] .pgb{transform:scaleX(-1)}
   <header>
     <div class="hr">
       <div><div class="hn" id="hn">—</div><div class="hs" id="hs">—</div></div>
+      <div class="hsr" onclick="srch()">⌕</div>
       <div class="lv"><div class="lvn" id="lv">1</div><div class="lvl">LEVEL</div></div>
     </div>
     <div class="xb"><div class="xf" id="xf" style="width:0"></div></div>

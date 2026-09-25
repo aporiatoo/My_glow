@@ -7,7 +7,7 @@ V.mn=()=>{
   const m={};S.tx.filter(t=>t.c!=='in').forEach(t=>m[t.c]=(m[t.c]||0)+t.a);
   const mx=Math.max(1,...Object.values(m));
   const g=MGOALS[S.goal];
-  const fm=n=>fa(n.toLocaleString('en-US'));
+  const fm=n=>fa((typeof n==='number'&&!isNaN(n)?n:0).toLocaleString('en-US'));
   return `<div class="c gl"><div class="ct">◉ ${L('خزانه','Treasury')}<b>${L('تومان','Toman')}</b></div>
    <div class="gr" style="grid-template-columns:repeat(3,1fr)">
     <div class="sk"><div class="skn" style="font-size:15px">${fm(inn)}</div><div class="skl">${L('درآمد','In')}</div></div>
@@ -119,7 +119,7 @@ V.so=()=>{
    <div class="cs">${L('اقدام مشخص، نه توصیهٔ کلی','Specific actions')}</div>
    ${mv.map(m=>`<div class="somv s${m.sev}" onclick="soLog('${m.p.id}')">
     <div class="somi">${m.ic}</div>
-    <div style="flex:1"><div class="rt">${m.p.n} — ${m.t}</div><div class="rd">${m.d}</div></div>
+    <div style="flex:1"><div class="rt">${esc(m.p.n)} — ${m.t}</div><div class="rd">${m.d}</div></div>
     <div class="rx">${m.act}</div></div>`).join('')}</div>`:''}
 
   <div class="c gl"><div class="ct">◍ ${L('حلقه‌ها','Rings')}</div>
@@ -136,7 +136,7 @@ V.so=()=>{
    ${P.map((p,i)=>{const w=warmth(S,p), o=overdue(S,p), R=RMAP[p.role];
     return `<div class="rw" onclick="soPerson(${i})">
      <div class="soav" style="opacity:${.35+w/100*.65}">${p.n.slice(0,1)}</div>
-     <div style="flex:1"><div class="rt">${p.n} ${R?`<span style="font-size:9px;color:var(--dim2)">· ${R[2]}</span>`:''}</div>
+     <div style="flex:1"><div class="rt">${esc(p.n)} ${R?`<span style="font-size:9px;color:var(--dim2)">· ${R[2]}</span>`:''}</div>
       <div class="sowb"><div class="sowf" style="width:${w}%"></div></div>
       <div class="rd" style="margin-top:3px">${(RINGS.find(x=>x.k===p.r)||{}).t}${o.d!==undefined?' · '+(o.d===0?L('امروز','today'):fa(o.d)+L(' روز پیش',' d ago')):' · '+L('بدون تعامل','no contact')}</div></div>
      <div class="rx"${o.due?' style="background:#fff;color:#000"':''}>${o.due?L('تماس','due'):fa(w)}</div></div>`}).join('')}
@@ -285,9 +285,11 @@ V.lg=()=>{
      return ''})()}</div>
 
   <div class="c gl"><div class="ct">✎ ${L('ژورنال','Journal')}<b>${fa(S.jr.length)} ${L('ثبت','entries')}</b></div>
+   ${window.voiceOk&&window.voiceOk()?`<button class="bt" style="margin-bottom:9px" onclick="jrVoice()">
+     ◉ ${L('گفتن به‌جای نوشتن','Speak instead')}</button>`:''}
    ${JPROMPTS.map((p,i)=>`<div class="rw" onclick="jw(${i})"><div class="ri">${fa(i+1)}</div>
     <div class="rt">${p}</div><div class="rx">${j&&j.a&&j.a[i]?'✓':'+'}</div></div>`).join('')}
-   ${j&&j.a?`<div class="hint">${j.a.filter(Boolean).map((x,i)=>'— '+x).join('<br>')}</div>`:''}</div>
+   ${j&&j.a?`<div class="hint">${j.a.filter(Boolean).map(x=>'— '+esc(x)).join('<br>')}</div>`:''}</div>
 
   <div class="c gl"><div class="ct">◉ ${L('نردبان آشپزی','Cooking Ladder')}<b>${fa(S.cook.length)}/${fa(COOK.length)}</b></div>
    <div class="bar" style="margin-bottom:10px"><div class="bf" style="width:${S.cook.length/COOK.length*100}%"></div></div>
@@ -319,7 +321,7 @@ V.ad=()=>{
   return `<div class="c gl"><div class="ct">◆ ${L('موتور تطبیق','Adaptive Engine')}<b>${fa(Math.round(rate*100))}٪ ${L('امروز','today')}</b></div>
    <div class="cs">${L('برنامه بر اساس عملکرد واقعی تو بازنویسی می‌شود، نه بر اساس فرض اولیه.','Rewrites from real data.')}</div>
    ${h14.length>1?`<div style="display:flex;gap:2.5px;align-items:flex-end;height:44px;margin-bottom:9px">
-    ${h14.map(x=>`<div style="flex:1;height:${Math.max(5,x.rate*100)}%;background:rgba(255,255,255,${.25+x.rate*.7});border-radius:2px"></div>`).join('')}</div>
+    ${h14.map(x=>`<div style="flex:1;height:${Math.max(5,(+x.rate||0)*100)}%;background:rgba(255,255,255,${.25+(+x.rate||0)*.7});border-radius:2px"></div>`).join('')}</div>
     <div class="hint">${L('۱۴ روز اخیر','Last 14 days')}</div>`:''}
    ${sug.map(s=>`<div class="rw"><div class="ri">◆</div><div><div class="rt">${s[0]}</div><div class="rd">${s[1]}</div></div></div>`).join('')}</div>
 
@@ -389,7 +391,7 @@ V.gy=()=>{
   <div class="c gl"><div class="ct">⚑ ${L('آمار مسابقه','Match Stats')}<b>${fa(S.ms.length)}</b></div>
    <button class="bt p" onclick="mlog()">${L('ثبت مسابقهٔ جدید','Log a match')}</button>
    ${S.ms.length?`<div style="margin-top:9px">${S.ms.slice(-5).reverse().map(m=>`<div class="rw">
-    <div class="ri">${m.rate>=7?'▲':m.rate>=5?'◈':'▽'}</div><div><div class="rt">${m.date} · ${m.pos||''}</div>
+    <div class="ri">${(+m.rate||0)>=7?'▲':(+m.rate||0)>=5?'◈':'▽'}</div><div><div class="rt">${m.date} · ${m.pos||''}</div>
     <div class="rd">${fa(m.min||0)}${L(' دقیقه',' min')} · ${L('پاس','pass')} ${fa(m.pass||0)}٪ · ${L('توپ‌گیری','tackles')} ${fa(m.tack||0)}</div></div>
     <div class="rx">${fa(m.rate||0)}/۱۰</div></div>`).join('')}
     <div class="hint">${L('میانگین امتیاز','Avg rating')}: ${fa((S.ms.reduce((a,m)=>a+ +(m.rate||0),0)/S.ms.length).toFixed(1))}</div></div>`:''}</div>`};
@@ -443,7 +445,7 @@ V.nu=()=>{
 
   ${(S.prot[d]||[]).length?`<div class="c gl"><div class="ct">${L('امروز خوردی','Eaten today')}</div>
    ${S.prot[d].map((x,i)=>`<div class="rw" onclick="fdd(${i})"><div class="ri">◦</div>
-    <div class="rt">${x.n}</div><div class="rx">${fa(x.p)}g</div></div>`).join('')}</div>`:''}
+    <div class="rt">${esc(x.n)}</div><div class="rx">${fa(x.p)}g</div></div>`).join('')}</div>`:''}
 
   <div class="c gl"><div class="ct">◉ ${L('لیست خرید','Shopping List')}</div>
    <div class="cs">${L('بر اساس نردبان آشپزی و نیاز پروتئینی','From your cooking ladder')}</div>
@@ -463,7 +465,7 @@ V.wd=()=>{
    return [r(t),r(b),s.length?r(s):null].filter(Boolean)};
   const o=pick();
   return `<div class="c gl"><div class="ct">▭ ${L('ست امروز','Outfit')}<b>${L('کلاسیک','Classic')}</b></div>
-   ${o?`${o.map(x=>`<div class="rw"><div class="ri">▭</div><div><div class="rt">${x.n}</div>
+   ${o?`${o.map(x=>`<div class="rw"><div class="ri">▭</div><div><div class="rt">${esc(x.n)}</div>
     <div class="rd">${x.col} · ${(WCAT.find(c=>c[0]===x.c)||[])[1]}</div></div></div>`).join('')}
     <button class="bt" style="margin-top:7px" onclick="rd()">${L('پیشنهاد دیگر','Another')}</button>`
    :`<div class="hint">${L('برای پیشنهاد ست، حداقل یک بالاتنه و یک پایین‌تنه اضافه کن.','Add items first.')}</div>`}</div>

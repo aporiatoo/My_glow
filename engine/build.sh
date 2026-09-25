@@ -12,12 +12,12 @@ import os, re, sys
 mode = os.environ.get('MODE', 'web')
 
 # ماژول‌های منطق — ترتیب مهم است (وابستگی‌ها اول)
-CORE = ['schema.js', 'core.js', 'routines.js', 'calendar.js', 'study.js',
+CORE = ['schema.js', 'core.js', 'profile.js', 'me.js', 'mastery.js', 'influence.js', 'mentalist.js', 'football.js', 'decision.js', 'tools.js', 'unlock.js', 'learn.js', 'ai.js', 'routines.js', 'calendar.js', 'study.js',
         'social.js', 'extra.js', 'guide.js', 'img.js', 'tree.js', 'systems.js']
 
 # لایهٔ رابط — از src/ به ترتیب
-UI = ['src/logic.js', 'src/interact.js', 'src/views.core.js', 'src/views.life.js',
-      'src/views.sys.js', 'src/views.edu.js']
+UI = ['src/logic.js', 'src/interact.js', 'src/native.js', 'src/views.core.js',
+      'src/views.life.js', 'src/views.sys.js', 'src/views.mastery.js', 'src/views.influence.js', 'src/views.mentalist.js', 'src/views.football.js', 'src/views.decision.js', 'src/views.tools.js', 'src/views.unlock.js', 'src/views.learn.js', 'src/views.ai.js', 'src/views.profile.js', 'src/views.me.js', 'src/views.edu.js']
 
 def read(p):
     if not os.path.exists(p):
